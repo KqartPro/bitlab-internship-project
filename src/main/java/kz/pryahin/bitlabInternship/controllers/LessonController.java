@@ -1,5 +1,6 @@
 package kz.pryahin.bitlabInternship.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import kz.pryahin.bitlabInternship.dtos.lessonDtos.CreateLessonDto;
 import kz.pryahin.bitlabInternship.dtos.lessonDtos.GetLessonDto;
@@ -25,6 +26,7 @@ public class LessonController {
 	}
 
 
+	@Operation(summary = "Возвращает все уроки из курса, сортируя по полю lessonOrder")
 	@GetMapping("/get-all-from-chapter")
 	public ResponseEntity<List<GetLessonDto>> getAllLessonsFromChapter(@RequestParam Long courseId,
 	                                                                   @RequestParam Long chapterId) {

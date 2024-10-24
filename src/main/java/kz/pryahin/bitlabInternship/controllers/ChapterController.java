@@ -1,5 +1,6 @@
 package kz.pryahin.bitlabInternship.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import kz.pryahin.bitlabInternship.dtos.chapterDtos.CreateChapterDto;
 import kz.pryahin.bitlabInternship.dtos.chapterDtos.GetChapterDto;
@@ -25,6 +26,7 @@ public class ChapterController {
 	}
 
 
+	@Operation(summary = "Возвращает все главы из курса, сортируя по полю chapterOrder")
 	@GetMapping("/get-all-from-course/{courseId}")
 	public ResponseEntity<List<GetChapterDto>> getAllChaptersByCourseId(@PathVariable Long courseId) {
 		return ResponseEntity.ok(chapterService.getAllChaptersByCourseId(courseId));
@@ -37,14 +39,14 @@ public class ChapterController {
 	}
 
 
-	@PostMapping("/{courseId}")
+	@PostMapping("/create/{courseId}")
 	public ResponseEntity<GetChapterDto> createChapter(@PathVariable Long courseId,
 	                                                   @Valid @RequestBody CreateChapterDto createChapterDto) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(chapterService.createChapter(courseId, createChapterDto));
 	}
 
 
-	@PatchMapping
+	@PatchMapping("/update")
 	public ResponseEntity<GetChapterDto> updateChapter(@RequestParam Long courseId,
 	                                                   @RequestParam Long chapterId,
 	                                                   @Valid @RequestBody UpdateChapterDto updateChapterDto) {
@@ -61,7 +63,7 @@ public class ChapterController {
 	}
 
 
-	@DeleteMapping()
+	@DeleteMapping("/delete")
 	public ResponseEntity<Void> deleteChapter(@RequestParam Long courseId, @RequestParam Long chapterId) {
 		chapterService.deleteChapter(courseId, chapterId);
 		return ResponseEntity.ok().build();
