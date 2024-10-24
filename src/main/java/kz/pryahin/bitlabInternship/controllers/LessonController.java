@@ -20,6 +20,7 @@ public class LessonController {
 	private final LessonService lessonService;
 
 
+	@Operation(summary = "Возвращает все уроки из БД")
 	@GetMapping("/get-all")
 	public ResponseEntity<List<GetLessonDto>> getAllLessons() {
 		return ResponseEntity.ok(lessonService.getAllLessons());
@@ -34,6 +35,7 @@ public class LessonController {
 	}
 
 
+	@Operation(summary = "Возвращает конкретный урок по Id")
 	@GetMapping("/get-one-lesson")
 	public ResponseEntity<GetLessonDto> getLessonById(@RequestParam Long courseId,
 	                                                  @RequestParam Long chapterId,
@@ -42,6 +44,7 @@ public class LessonController {
 	}
 
 
+	@Operation(summary = "Создает урок в конкретной главе")
 	@PostMapping
 	public ResponseEntity<GetLessonDto> createLesson(@RequestParam Long courseId,
 	                                                 @RequestParam Long chapterId,
@@ -50,6 +53,7 @@ public class LessonController {
 	}
 
 
+	@Operation(summary = "Обновляет урок в конкретной главе")
 	@PatchMapping
 	public ResponseEntity<GetLessonDto> updateLesson(@RequestParam Long courseId,
 	                                                 @RequestParam Long chapterId,
@@ -59,6 +63,7 @@ public class LessonController {
 	}
 
 
+	@Operation(summary = "Обновляет поле lessonOrder, отвечающее за порядок отображения уроков")
 	@PutMapping("/update-order")
 	public ResponseEntity<GetLessonDto> updateLessonOrder(
 		@RequestParam Long courseId,
@@ -69,6 +74,7 @@ public class LessonController {
 	}
 
 
+	@Operation(summary = "Удаляет главу в конкретном курсе")
 	@DeleteMapping()
 	public ResponseEntity<Void> deleteLesson(@RequestParam Long courseId,
 	                                         @RequestParam Long chapterId,

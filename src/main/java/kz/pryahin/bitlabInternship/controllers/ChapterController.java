@@ -20,6 +20,7 @@ public class ChapterController {
 	private final ChapterService chapterService;
 
 
+	@Operation(summary = "Возвращает все главы из БД")
 	@GetMapping("/get-all")
 	public ResponseEntity<List<GetChapterDto>> getAllChapters() {
 		return ResponseEntity.ok(chapterService.getAllChapters());
@@ -33,12 +34,14 @@ public class ChapterController {
 	}
 
 
+	@Operation(summary = "Возвращает конкретную главу по Id")
 	@GetMapping("/get-one-chapter")
 	public ResponseEntity<GetChapterDto> getChapterById(@RequestParam Long courseId, @RequestParam Long chapterId) {
 		return ResponseEntity.ok(chapterService.getChapterById(courseId, chapterId));
 	}
 
 
+	@Operation(summary = "Создает главу в конкретном курсе")
 	@PostMapping("/create/{courseId}")
 	public ResponseEntity<GetChapterDto> createChapter(@PathVariable Long courseId,
 	                                                   @Valid @RequestBody CreateChapterDto createChapterDto) {
@@ -46,6 +49,7 @@ public class ChapterController {
 	}
 
 
+	@Operation(summary = "Обновляет главу в конкретном курсе")
 	@PatchMapping("/update")
 	public ResponseEntity<GetChapterDto> updateChapter(@RequestParam Long courseId,
 	                                                   @RequestParam Long chapterId,
@@ -54,6 +58,7 @@ public class ChapterController {
 	}
 
 
+	@Operation(summary = "Обновляет поле chapterOrder, отвечающее за порядок отображения глав")
 	@PutMapping("/update-order")
 	public ResponseEntity<GetChapterDto> updateChapterOrder(
 		@RequestParam Long courseId,
@@ -63,6 +68,7 @@ public class ChapterController {
 	}
 
 
+	@Operation(summary = "Удаляет главу в конкретном курсе")
 	@DeleteMapping("/delete")
 	public ResponseEntity<Void> deleteChapter(@RequestParam Long courseId, @RequestParam Long chapterId) {
 		chapterService.deleteChapter(courseId, chapterId);
