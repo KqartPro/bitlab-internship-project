@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: user
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/18_10_2024_first_migration.sql
