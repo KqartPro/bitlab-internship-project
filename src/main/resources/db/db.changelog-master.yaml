@@ -4,4 +4,4 @@ databaseChangeLog:
       author: user
       changes:
         - sqlFile:
-            path: db/changelog/changes/18_10_2024_first_migration.sql
+            path: db/changelog/changes/filling_tables.sql
