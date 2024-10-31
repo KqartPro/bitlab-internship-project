@@ -49,7 +49,8 @@ public class LessonController {
 	public ResponseEntity<GetLessonDto> createLesson(@RequestParam Long courseId,
 	                                                 @RequestParam Long chapterId,
 	                                                 @Valid @RequestBody CreateLessonDto createLessonDto) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.createLesson(courseId, chapterId, createLessonDto));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(lessonService.createLesson(courseId, chapterId, createLessonDto));
 	}
 
 

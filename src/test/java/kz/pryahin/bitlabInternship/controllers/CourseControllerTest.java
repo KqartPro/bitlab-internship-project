@@ -83,7 +83,7 @@ class CourseControllerTest {
 	void createCourse() throws Exception {
 		CreateCourseDto course = new CreateCourseDto();
 		course.setName("First Course");
-		
+
 		mockMvc.perform(post("/course/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(course)))
