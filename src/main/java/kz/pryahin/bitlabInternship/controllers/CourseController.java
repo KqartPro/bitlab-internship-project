@@ -23,6 +23,7 @@ public class CourseController {
 	@Operation(summary = "Возвращает все курсы из БД")
 	@GetMapping("/get-all")
 	public ResponseEntity<List<GetCourseDto>> getAllCourses() {
+
 		return ResponseEntity.ok(courseService.getAllCourses());
 	}
 
@@ -30,6 +31,7 @@ public class CourseController {
 	@Operation(summary = "Возвращает курс по Id")
 	@GetMapping("/get-one/{id}")
 	public ResponseEntity<GetCourseDto> getCourseById(@PathVariable Long id) {
+
 		return ResponseEntity.ok(courseService.getCourseById(id));
 	}
 
@@ -37,6 +39,7 @@ public class CourseController {
 	@Operation(summary = "Создает курс")
 	@PostMapping("/create")
 	public ResponseEntity<GetCourseDto> createCourse(@Valid @RequestBody CreateCourseDto createCourseDto) {
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(createCourseDto));
 
 	}
@@ -45,6 +48,7 @@ public class CourseController {
 	@Operation(summary = "Обновляет курс по Id")
 	@PatchMapping("/update/{id}")
 	public ResponseEntity<GetCourseDto> updateCourse(@PathVariable Long id, @Valid @RequestBody UpdateCourseDto updateCourseDto) {
+
 		return ResponseEntity.ok(courseService.updateCourse(id, updateCourseDto));
 	}
 
@@ -52,6 +56,7 @@ public class CourseController {
 	@Operation(summary = "Удаляет курс по Id")
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
+
 		courseService.deleteCourse(id);
 		return ResponseEntity.ok().build();
 	}
