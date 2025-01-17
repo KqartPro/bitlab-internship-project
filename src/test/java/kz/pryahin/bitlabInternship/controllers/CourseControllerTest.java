@@ -1,11 +1,12 @@
 package kz.pryahin.bitlabInternship.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kz.pryahin.bitlabInternship.dtos.courseDtos.CreateCourseDto;
-import kz.pryahin.bitlabInternship.dtos.courseDtos.GetCourseDto;
-import kz.pryahin.bitlabInternship.dtos.courseDtos.UpdateCourseDto;
-import kz.pryahin.bitlabInternship.entities.Course;
-import kz.pryahin.bitlabInternship.services.impl.CourseServiceImpl;
+import kz.pryahin.bitlabInternship.main.controllers.CourseController;
+import kz.pryahin.bitlabInternship.main.dtos.courseDtos.CreateCourseDto;
+import kz.pryahin.bitlabInternship.main.dtos.courseDtos.GetCourseDto;
+import kz.pryahin.bitlabInternship.main.dtos.courseDtos.UpdateCourseDto;
+import kz.pryahin.bitlabInternship.main.entities.Course;
+import kz.pryahin.bitlabInternship.main.services.impl.CourseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,116 +26,116 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class CourseControllerTest {
-	private MockMvc mockMvc;
-	private ObjectMapper objectMapper;
-	private GetCourseDto getCourseDto;
+  private MockMvc mockMvc;
+  private ObjectMapper objectMapper;
+  private GetCourseDto getCourseDto;
 
-	@InjectMocks
-	private CourseController courseController;
+  @InjectMocks
+  private CourseController courseController;
 
-	@Mock
-	private CourseServiceImpl courseService;
-
-
-	@BeforeEach
-	void setUp() {
-		mockMvc = MockMvcBuilders.standaloneSetup(courseController).build();
-		objectMapper = new ObjectMapper();
-
-		Course course = new Course();
-		course.setId(1L);
-		course.setName("Test Course");
-		course.setDescription("Test Description");
-
-		getCourseDto = new GetCourseDto();
-		getCourseDto.setId(1L);
-		getCourseDto.setName("Test Course Dto");
-		getCourseDto.setDescription("Test Description");
-	}
+  @Mock
+  private CourseServiceImpl courseService;
 
 
-	@Test
-	void getAllCourses() throws Exception {
-		when(courseService.getAllCourses()).thenReturn(List.of(getCourseDto));
+  @BeforeEach
+  void setUp() {
+    mockMvc = MockMvcBuilders.standaloneSetup(courseController).build();
+    objectMapper = new ObjectMapper();
 
-		mockMvc.perform(get("/course/get-all"))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$[0].name").value("Test Course Dto"));
-		verify(courseService, times(1)).getAllCourses();
-	}
+    Course course = new Course();
+    course.setId(1L);
+    course.setName("Test Course");
+    course.setDescription("Test Description");
 
-
-	@Test
-	void getCourseById() throws Exception {
-		when(courseService.getCourseById(1L)).thenReturn(getCourseDto);
-
-		mockMvc.perform(get("/course/get-one/{id}", 1L))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id").value(1L))
-			.andExpect(jsonPath("$.name").value("Test Course Dto"))
-			.andExpect(jsonPath("$.description").value("Test Description"));
+    getCourseDto = new GetCourseDto();
+    getCourseDto.setId(1L);
+    getCourseDto.setName("Test Course Dto");
+    getCourseDto.setDescription("Test Description");
+  }
 
 
-		verify(courseService, times(1)).getCourseById(1L);
-	}
+  @Test
+  void getAllCourses() throws Exception {
+    when(courseService.getAllCourses()).thenReturn(List.of(getCourseDto));
+
+    mockMvc.perform(get("/course/get-all"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].name").value("Test Course Dto"));
+    verify(courseService, times(1)).getAllCourses();
+  }
 
 
-	@Test
-	void createCourse() throws Exception {
-		CreateCourseDto course = new CreateCourseDto();
-		course.setName("First Course");
+  @Test
+  void getCourseById() throws Exception {
+    when(courseService.getCourseById(1L)).thenReturn(getCourseDto);
 
-		mockMvc.perform(post("/course/create")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(course)))
-			.andExpect(status().isCreated());
-
-		verify(courseService, times(1)).createCourse(course);
-
-	}
+    mockMvc.perform(get("/course/get-one/{id}", 1L))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1L))
+        .andExpect(jsonPath("$.name").value("Test Course Dto"))
+        .andExpect(jsonPath("$.description").value("Test Description"));
 
 
-	@Test
-	void updateCourse() throws Exception {
-		UpdateCourseDto course = new UpdateCourseDto();
-		course.setName("Test Course Dto");
-		course.setDescription("Test Description");
-
-		String courseJson = objectMapper.writeValueAsString(course);
-		mockMvc.perform(patch("/course/update/{id}", 1L)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(courseJson))
-			.andExpect(status().isOk());
-
-		verify(courseService, times(1)).updateCourse(1L, course);
-
-	}
+    verify(courseService, times(1)).getCourseById(1L);
+  }
 
 
-	@Test
-	public void updateCourse_ShouldReturnUpdatedCourse() throws Exception {
-		when(courseService.updateCourse(eq(1L), any(UpdateCourseDto.class))).thenReturn(getCourseDto);
+  @Test
+  void createCourse() throws Exception {
+    CreateCourseDto course = new CreateCourseDto();
+    course.setName("First Course");
 
-		UpdateCourseDto course = new UpdateCourseDto();
-		course.setName("Test Course Dto");
-		course.setDescription("Test Description");
+    mockMvc.perform(post("/course/create")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(course)))
+        .andExpect(status().isCreated());
 
-		mockMvc.perform(patch("/course/update/{id}", 1L)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(course)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.name").value(getCourseDto.getName()))
-			.andExpect(jsonPath("$.description").value(getCourseDto.getDescription()));
+    verify(courseService, times(1)).createCourse(course);
 
-		verify(courseService, times(1)).updateCourse(eq(1L), any(UpdateCourseDto.class));
-	}
+  }
 
 
-	@Test
-	public void deleteCourse_ShouldReturnStatusOk() throws Exception {
-		mockMvc.perform(delete("/course/delete/{id}", 1L))
-			.andExpect(status().isOk());
+  @Test
+  void updateCourse() throws Exception {
+    UpdateCourseDto course = new UpdateCourseDto();
+    course.setName("Test Course Dto");
+    course.setDescription("Test Description");
 
-		verify(courseService, times(1)).deleteCourse(1L);
-	}
+    String courseJson = objectMapper.writeValueAsString(course);
+    mockMvc.perform(patch("/course/update/{id}", 1L)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(courseJson))
+        .andExpect(status().isOk());
+
+    verify(courseService, times(1)).updateCourse(1L, course);
+
+  }
+
+
+  @Test
+  public void updateCourse_ShouldReturnUpdatedCourse() throws Exception {
+    when(courseService.updateCourse(eq(1L), any(UpdateCourseDto.class))).thenReturn(getCourseDto);
+
+    UpdateCourseDto course = new UpdateCourseDto();
+    course.setName("Test Course Dto");
+    course.setDescription("Test Description");
+
+    mockMvc.perform(patch("/course/update/{id}", 1L)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(course)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value(getCourseDto.getName()))
+        .andExpect(jsonPath("$.description").value(getCourseDto.getDescription()));
+
+    verify(courseService, times(1)).updateCourse(eq(1L), any(UpdateCourseDto.class));
+  }
+
+
+  @Test
+  public void deleteCourse_ShouldReturnStatusOk() throws Exception {
+    mockMvc.perform(delete("/course/delete/{id}", 1L))
+        .andExpect(status().isOk());
+
+    verify(courseService, times(1)).deleteCourse(1L);
+  }
 }

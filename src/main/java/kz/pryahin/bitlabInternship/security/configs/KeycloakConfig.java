@@ -20,175 +20,175 @@ import java.util.List;
 @Slf4j
 public class KeycloakConfig {
 
-	@Value("${keycloak.url}")
-	private String url;
+  @Value("${keycloak.url}")
+  private String url;
 
-	@Value("${keycloak.realm}")
-	private String realmName;
+  @Value("${keycloak.realm}")
+  private String realmName;
 
-	@Value("${keycloak.client}")
-	private String client;
+  @Value("${keycloak.client}")
+  private String client;
 
-	@Value("${keycloak.client-secret}")
-	private String clientSecret;
+  @Value("${keycloak.client-secret}")
+  private String clientSecret;
 
-	@Value("${keycloak.username}")
-	private String username;
+  @Value("${keycloak.username}")
+  private String username;
 
-	@Value("${keycloak.password}")
-	private String password;
+  @Value("${keycloak.password}")
+  private String password;
 
-	@Value("${keycloak.grant-type}")
-	private String grantType;
-
-
-	@Bean
-	public Keycloak keycloak() {
-
-		log.info("Инициализация Keycloak Bean");
-
-		// Подключение к master-realm
-		Keycloak adminKeycloak = KeycloakBuilder.builder()
-				.serverUrl(url)
-				.realm("master")
-				.clientId("admin-cli")
-				.username("admin")
-				.password("admin")
-				.build();
+  @Value("${keycloak.grant-type}")
+  private String grantType;
 
 
-		createRealmIfNotExists(adminKeycloak);
-		createClient(adminKeycloak);
-		createUserWithRoles(adminKeycloak);
+  @Bean
+  public Keycloak keycloak() {
 
-		return KeycloakBuilder.builder()
-				.serverUrl(url)
-				.realm(realmName)
-				.clientId(client)
-				.clientSecret(clientSecret)
-				.username(username)
-				.password(password)
-				.grantType(grantType)
-				.build();
-	}
+    log.info("Инициализация Keycloak Bean");
 
-
-	private void createRealmIfNotExists(Keycloak adminKeycloak) {
-
-		try {
-			adminKeycloak.realm(realmName).toRepresentation();
-			log.info("Realm '{}' уже существует", realmName);
-		} catch (NotFoundException e) {
-			log.info("Realm '{}' не найден, создаем новый", realmName);
-
-			RealmRepresentation realmRepresentation = new RealmRepresentation();
-			realmRepresentation.setRealm(realmName);
-			realmRepresentation.setEnabled(true);
-			realmRepresentation.setDuplicateEmailsAllowed(true);
-			realmRepresentation.setLoginWithEmailAllowed(false);
-
-			adminKeycloak.realms().create(realmRepresentation);
-
-			adminKeycloak.realm(realmName).toRepresentation();
-			log.info("Realm '{}' успешно создан", realmName);
-		}
-	}
+    // Подключение к master-realm
+    Keycloak adminKeycloak = KeycloakBuilder.builder()
+        .serverUrl(url)
+        .realm("master")
+        .clientId("admin-cli")
+        .username("admin")
+        .password("admin")
+        .build();
 
 
-	private void createClient(Keycloak adminKeycloak) {
+    createRealmIfNotExists(adminKeycloak);
+    createClient(adminKeycloak);
+    createUserWithRoles(adminKeycloak);
 
-		var clientsResource = adminKeycloak.realm(realmName).clients();
-
-		// Проверяем, существует ли клиент
-		var existingClients = clientsResource.findByClientId(client);
-		if (!existingClients.isEmpty()) {
-			log.info("Клиент '{}' уже существует", client);
-			return;
-		}
-
-		ClientRepresentation clientRepresentation = new ClientRepresentation();
-		clientRepresentation.setClientId(client);
-		clientRepresentation.setSecret(clientSecret);
-		clientRepresentation.setDirectAccessGrantsEnabled(true);
-		clientRepresentation.setPublicClient(false);
-		clientRepresentation.setServiceAccountsEnabled(true);
-		clientRepresentation.setProtocol("openid-connect");
-
-		clientsResource.create(clientRepresentation);
-		log.info("Клиент '{}' успешно создан", client);
-	}
+    return KeycloakBuilder.builder()
+        .serverUrl(url)
+        .realm(realmName)
+        .clientId(client)
+        .clientSecret(clientSecret)
+        .username(username)
+        .password(password)
+        .grantType(grantType)
+        .build();
+  }
 
 
-	private void createUserWithRoles(Keycloak adminKeycloak) {
+  private void createRealmIfNotExists(Keycloak adminKeycloak) {
 
-		var users = adminKeycloak.realm(realmName).users();
+    try {
+      adminKeycloak.realm(realmName).toRepresentation();
+      log.info("Realm '{}' уже существует", realmName);
+    } catch (NotFoundException e) {
+      log.info("Realm '{}' не найден, создаем новый", realmName);
 
-		// Проверяем, существует ли пользователь
-		var existingUsers = users.search(username);
-		if (!existingUsers.isEmpty()) {
-			log.info("Пользователь '{}' уже существует", username);
-			return;
-		}
+      RealmRepresentation realmRepresentation = new RealmRepresentation();
+      realmRepresentation.setRealm(realmName);
+      realmRepresentation.setEnabled(true);
+      realmRepresentation.setDuplicateEmailsAllowed(true);
+      realmRepresentation.setLoginWithEmailAllowed(false);
 
-		UserRepresentation userRepresentation = new UserRepresentation();
-		userRepresentation.setUsername(username);
-		userRepresentation.setEnabled(true);
-		userRepresentation.setEmailVerified(true);
-		userRepresentation.setEmail(username + "@example.com");
-		userRepresentation.setFirstName("Bitlab");
-		userRepresentation.setLastName("Admin");
+      adminKeycloak.realms().create(realmRepresentation);
 
-		CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
-		credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
-		credentialRepresentation.setTemporary(false);
-		credentialRepresentation.setValue(password);
-
-		userRepresentation.setCredentials(List.of(credentialRepresentation));
-
-		var response = users.create(userRepresentation);
-		if (response.getStatus() != 201) {
-			log.error("Не удалось создать пользователя '{}', код ответа: {}", username, response.getStatus());
-			return;
-		}
-
-		log.info("Пользователь '{}' успешно создан", username);
-
-		// Назначаем роли пользователю
-		assignRolesToUser(username, adminKeycloak);
-	}
+      adminKeycloak.realm(realmName).toRepresentation();
+      log.info("Realm '{}' успешно создан", realmName);
+    }
+  }
 
 
-	private void assignRolesToUser(String username, Keycloak adminKeycloak) {
+  private void createClient(Keycloak adminKeycloak) {
 
-		var users = adminKeycloak.realm(realmName).users();
-		var userId = users.search(username).get(0).getId();
+    var clientsResource = adminKeycloak.realm(realmName).clients();
 
-		// Подключаемся к клиенту realm-management
-		var clients = adminKeycloak.realm(realmName).clients();
-		var realmManagementClient = clients.findByClientId("realm-management").get(0);
-		var realmManagementClientId = realmManagementClient.getId();
+    // Проверяем, существует ли клиент
+    var existingClients = clientsResource.findByClientId(client);
+    if (!existingClients.isEmpty()) {
+      log.info("Клиент '{}' уже существует", client);
+      return;
+    }
 
-		var rolesToAssign = List.of("manage-users", "realm-admin", "view-realm");
-		var clientRoles = adminKeycloak.realm(realmName)
-				.clients()
-				.get(realmManagementClientId)
-				.roles();
+    ClientRepresentation clientRepresentation = new ClientRepresentation();
+    clientRepresentation.setClientId(client);
+    clientRepresentation.setSecret(clientSecret);
+    clientRepresentation.setDirectAccessGrantsEnabled(true);
+    clientRepresentation.setPublicClient(false);
+    clientRepresentation.setServiceAccountsEnabled(true);
+    clientRepresentation.setProtocol("openid-connect");
 
-		// Получаем роли
-		var roleRepresentations = rolesToAssign.stream()
-				.map(clientRoles::get)
-				.map(RoleResource::toRepresentation)
-				.toList();
-
-		// Назначаем роли пользователю
-		users.get(userId).roles().clientLevel(realmManagementClientId).add(roleRepresentations);
-		log.info("Роли {} успешно назначены пользователю '{}'", rolesToAssign, username);
-	}
+    clientsResource.create(clientRepresentation);
+    log.info("Клиент '{}' успешно создан", client);
+  }
 
 
-	@Bean
-	public RestTemplate restTemplate() {
+  private void createUserWithRoles(Keycloak adminKeycloak) {
 
-		return new RestTemplate();
-	}
+    var users = adminKeycloak.realm(realmName).users();
+
+    // Проверяем, существует ли пользователь
+    var existingUsers = users.search(username);
+    if (!existingUsers.isEmpty()) {
+      log.info("Пользователь '{}' уже существует", username);
+      return;
+    }
+
+    UserRepresentation userRepresentation = new UserRepresentation();
+    userRepresentation.setUsername(username);
+    userRepresentation.setEnabled(true);
+    userRepresentation.setEmailVerified(true);
+    userRepresentation.setEmail(username + "@example.com");
+    userRepresentation.setFirstName("Bitlab");
+    userRepresentation.setLastName("Admin");
+
+    CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+    credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+    credentialRepresentation.setTemporary(false);
+    credentialRepresentation.setValue(password);
+
+    userRepresentation.setCredentials(List.of(credentialRepresentation));
+
+    var response = users.create(userRepresentation);
+    if (response.getStatus() != 201) {
+      log.error("Не удалось создать пользователя '{}', код ответа: {}", username, response.getStatus());
+      return;
+    }
+
+    log.info("Пользователь '{}' успешно создан", username);
+
+    // Назначаем роли пользователю
+    assignRolesToUser(username, adminKeycloak);
+  }
+
+
+  private void assignRolesToUser(String username, Keycloak adminKeycloak) {
+
+    var users = adminKeycloak.realm(realmName).users();
+    var userId = users.search(username).get(0).getId();
+
+    // Подключаемся к клиенту realm-management
+    var clients = adminKeycloak.realm(realmName).clients();
+    var realmManagementClient = clients.findByClientId("realm-management").get(0);
+    var realmManagementClientId = realmManagementClient.getId();
+
+    var rolesToAssign = List.of("manage-users", "realm-admin", "view-realm");
+    var clientRoles = adminKeycloak.realm(realmName)
+        .clients()
+        .get(realmManagementClientId)
+        .roles();
+
+    // Получаем роли
+    var roleRepresentations = rolesToAssign.stream()
+        .map(clientRoles::get)
+        .map(RoleResource::toRepresentation)
+        .toList();
+
+    // Назначаем роли пользователю
+    users.get(userId).roles().clientLevel(realmManagementClientId).add(roleRepresentations);
+    log.info("Роли {} успешно назначены пользователю '{}'", rolesToAssign, username);
+  }
+
+
+  @Bean
+  public RestTemplate restTemplate() {
+
+    return new RestTemplate();
+  }
 }

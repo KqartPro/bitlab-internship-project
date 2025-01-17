@@ -46,6 +46,9 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.keycloak:keycloak-admin-client:26.0.3'
 
+    implementation 'io.minio:minio:8.5.14'
+    implementation 'commons-codec:commons-codec:1.17.2'
+
 
 }
 

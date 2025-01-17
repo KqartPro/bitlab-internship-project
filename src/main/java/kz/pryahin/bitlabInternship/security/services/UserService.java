@@ -7,24 +7,24 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-	String refreshToken(RefreshTokenDto refreshToken);
+    GetTokensDto refreshToken(RefreshTokenDto refreshToken);
 
-	String loginUser(LoginUserDto user);
+    GetTokensDto loginUser(LoginUserDto user);
 
-	ResponseEntity<?> createUser(CreateUserDto createUserDto);
+    ResponseEntity<?> createUser(CreateUserDto createUserDto);
 
-	ResponseEntity<?> changeUserPassword(ChangePasswordDto passwords);
+    ResponseEntity<?> changeUserPassword(ChangePasswordDto passwords);
 
-	ResponseEntity<?> setRolesToUser(UserRolesDto userRolesDto);
+    ResponseEntity<?> setRolesToUser(UserRolesDto userRolesDto);
 
-	ResponseEntity<?> updateUserData(UpdateUserDto updateUserDto);
+    ResponseEntity<?> updateUserData(UpdateUserDto updateUserDto);
 
-	ResponseEntity<?> deleteUserRoles(UserRolesDto userRolesDto);
+    ResponseEntity<?> deleteUserRoles(UserRolesDto userRolesDto);
 
-	UserRepresentation setupUserRepresentation(CreateUserDto createUserDto);
+    UserRepresentation setupUserRepresentation(CreateUserDto createUserDto);
 
-	UserRepresentation findUserByUsername(String username);
+    UserRepresentation findUserByUsername(String username);
 
-	RoleRepresentation findRoleByName(String name);
+    RoleRepresentation findRoleByName(String name);
 
 }
